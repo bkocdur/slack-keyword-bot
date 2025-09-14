@@ -189,7 +189,12 @@ def slack_command():
         text = data.get('text', '').strip()
         channel_id = data.get('channel_id')
         
-        if command == '/keyword-research':
+        # Debug logging
+        logger.info(f"Received command: '{command}', text: '{text}', channel: '{channel_id}'")
+        logger.info(f"All form data: {dict(data)}")
+        
+        # Handle different command formats
+        if command in ['/keyword-research', '/keyword']:
             if not text:
                 return jsonify({
                     'response_type': 'ephemeral',
