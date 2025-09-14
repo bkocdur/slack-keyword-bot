@@ -20,10 +20,8 @@ def get_keyword_data(keyword):
         request = client.get_type("GenerateKeywordIdeasRequest")
         request.customer_id = CUSTOMER_ID
         request.language = LANGUAGE_CODE
-        # Add UAE geo targeting
-        geo_target = client.get_type("GeoTargetConstant")
-        geo_target.resource_name = LOCATION_CODE
-        request.geo_target_constants.append(geo_target)
+        # Add UAE geo targeting using the correct resource name format
+        request.geo_target_constants.append("geoTargetConstants/784")
         request.keyword_plan_network = client.enums.KeywordPlanNetworkEnum[NETWORK_TYPE]
         request.keyword_seed.keywords.append(keyword)
 
