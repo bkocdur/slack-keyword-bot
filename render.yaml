@@ -4,7 +4,7 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r requirements_slack.txt
-    startCommand: gunicorn --bind 0.0.0.0:1000 --workers 1 --timeout 120 slack_app_manifest:app
+    startCommand: gunicorn --bind 0.0.0.0:$PORT slack_app_manifest:app
     envVars:
       # Slack App Configuration
       - key: SLACK_BOT_TOKEN
@@ -25,7 +25,5 @@ services:
       - key: GOOGLE_ADS_REFRESH_TOKEN
         sync: false
       # Server Configuration
-      - key: PORT
-        value: 1000
       - key: FLASK_ENV
         value: production
