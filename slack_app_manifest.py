@@ -29,7 +29,11 @@ SLACK_BOT_TOKEN = os.getenv('SLACK_BOT_TOKEN')
 SLACK_SIGNING_SECRET = os.getenv('SLACK_SIGNING_SECRET')
 
 # Initialize Slack client
-slack_client = WebClient(token=SLACK_BOT_TOKEN)
+if not SLACK_BOT_TOKEN:
+    logger.error("SLACK_BOT_TOKEN is not set!")
+    slack_client = None
+else:
+    slack_client = WebClient(token=SLACK_BOT_TOKEN)
 
 def format_keyword_data(keyword, data):
     """Format keyword research data for Slack display"""
@@ -201,23 +205,43 @@ def slack_command():
                     'text': 'Please provide a keyword to research. Usage: `/keyword-research digital marketing`'
                 })
             
+            # Check if Slack client is available
+            if not slack_client:
+                return jsonify({
+                    'response_type': 'ephemeral',
+                    'text': '❌ Bot configuration error. Please contact the administrator.'
+                })
+            
             # Send initial response
-            slack_client.chat_postMessage(
-                channel=channel_id,
-                text=f"🔍 Researching keyword: *{text}*... This may take a few seconds."
-            )
+            try:
+                slack_client.chat_postMessage(
+                    channel=channel_id,
+                    text=f"🔍 Researching keyword: *{text}*... This may take a few seconds."
+                )
+            except Exception as e:
+                logger.error(f"Error sending initial message: {str(e)}")
+                return jsonify({
+                    'response_type': 'ephemeral',
+                    'text': f'❌ Error: {str(e)}'
+                })
             
             # Get keyword data in a separate thread
             def research_keyword():
                 try:
                     data = get_keyword_data_safe(text)
                     message = format_keyword_data(text, data)
-                    slack_client.chat_postMessage(channel=channel_id, text=message)
+                    if slack_client:
+                        slack_client.chat_postMessage(channel=channel_id, text=message)
                 except Exception as e:
-                    slack_client.chat_postMessage(
-                        channel=channel_id,
-                        text=f"❌ Error researching keyword '{text}': {str(e)}"
-                    )
+                    logger.error(f"Error in research_keyword: {str(e)}")
+                    if slack_client:
+                        try:
+                            slack_client.chat_postMessage(
+                                channel=channel_id,
+                                text=f"❌ Error researching keyword '{text}': {str(e)}"
+                            )
+                        except Exception as e2:
+                            logger.error(f"Error sending error message: {str(e2)}")
             
             thread = threading.Thread(target=research_keyword)
             thread.start()
