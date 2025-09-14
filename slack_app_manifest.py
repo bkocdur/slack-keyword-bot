@@ -192,9 +192,11 @@ def slack_command():
         command = data.get('command')
         text = data.get('text', '').strip()
         channel_id = data.get('channel_id')
+        response_url = data.get('response_url')
         
         # Debug logging
         logger.info(f"Received command: '{command}', text: '{text}', channel: '{channel_id}'")
+        logger.info(f"Response URL: '{response_url}'")
         logger.info(f"All form data: {dict(data)}")
         
         # Handle different command formats
@@ -205,51 +207,20 @@ def slack_command():
                     'text': 'Please provide a keyword to research. Usage: `/keyword-research digital marketing`'
                 })
             
-            # Check if Slack client is available
-            if not slack_client:
-                return jsonify({
-                    'response_type': 'ephemeral',
-                    'text': '❌ Bot configuration error. Please contact the administrator.'
-                })
-            
-            # Send initial response
+            # Do keyword research immediately
             try:
-                slack_client.chat_postMessage(
-                    channel=channel_id,
-                    text=f"🔍 Researching keyword: *{text}*... This may take a few seconds."
-                )
+                data = get_keyword_data_safe(text)
+                message = format_keyword_data(text, data)
+                return jsonify({
+                    'response_type': 'in_channel',
+                    'text': message
+                })
             except Exception as e:
-                logger.error(f"Error sending initial message: {str(e)}")
+                logger.error(f"Error researching keyword: {str(e)}")
                 return jsonify({
                     'response_type': 'ephemeral',
-                    'text': f'❌ Error: {str(e)}'
+                    'text': f'❌ Error researching keyword "{text}": {str(e)}'
                 })
-            
-            # Get keyword data in a separate thread
-            def research_keyword():
-                try:
-                    data = get_keyword_data_safe(text)
-                    message = format_keyword_data(text, data)
-                    if slack_client:
-                        slack_client.chat_postMessage(channel=channel_id, text=message)
-                except Exception as e:
-                    logger.error(f"Error in research_keyword: {str(e)}")
-                    if slack_client:
-                        try:
-                            slack_client.chat_postMessage(
-                                channel=channel_id,
-                                text=f"❌ Error researching keyword '{text}': {str(e)}"
-                            )
-                        except Exception as e2:
-                            logger.error(f"Error sending error message: {str(e2)}")
-            
-            thread = threading.Thread(target=research_keyword)
-            thread.start()
-            
-            return jsonify({
-                'response_type': 'ephemeral',
-                'text': 'Keyword research started! Results will appear shortly.'
-            })
         
         return jsonify({'text': 'Unknown command'})
     
