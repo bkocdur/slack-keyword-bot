@@ -9,6 +9,10 @@ def get_keyword_data(keyword):
     Returns a dictionary with keyword metrics or None if error.
     """
     try:
+        print(f"🔍 Researching keyword: {keyword}")
+        print(f"📍 Location: UAE (geoTargetConstants/784)")
+        print(f"🌐 Language: English (languageConstants/1000)")
+        
         client = GoogleAdsClient.load_from_dict(GOOGLE_ADS_CONFIG)
 
         service = client.get_service("KeywordPlanIdeaService")
@@ -20,11 +24,18 @@ def get_keyword_data(keyword):
         request.keyword_plan_network = client.enums.KeywordPlanNetworkEnum[NETWORK_TYPE]
         request.keyword_seed.keywords.append(keyword)
 
+        print(f"📡 Making API request...")
         response = service.generate_keyword_ideas(request=request)
-
-        for idea in response:
+        
+        # Convert to list to check length
+        ideas_list = list(response)
+        print(f"📊 Received {len(ideas_list)} keyword ideas")
+        
+        for idea in ideas_list:
+            print(f"🔍 Checking idea: '{idea.text}' (target: '{keyword}')")
             if idea.text.lower() == keyword.lower():
                 metrics = idea.keyword_idea_metrics
+                print(f"✅ Found exact match! Avg searches: {metrics.avg_monthly_searches}")
                 
                 # Prepare monthly breakdown data
                 monthly_breakdown = {}
@@ -50,14 +61,17 @@ def get_keyword_data(keyword):
                     'monthly_breakdown': monthly_breakdown
                 }
         
+        print(f"❌ No exact match found for '{keyword}'")
+        
         # If exact keyword not found, return the first few suggestions
         suggestions = []
-        for idea in response[:5]:
+        for idea in ideas_list[:5]:
             suggestions.append({
                 'keyword': idea.text,
                 'avg_monthly_searches': idea.keyword_idea_metrics.avg_monthly_searches
             })
         
+        print(f"💡 Found {len(suggestions)} suggestions")
         return {
             'keyword': keyword,
             'exact_match': False,
@@ -65,11 +79,16 @@ def get_keyword_data(keyword):
         }
 
     except GoogleAdsException as ex:
+        print(f"❌ Google Ads API Error:")
+        print(f"Request ID: {ex.request_id}")
+        print(f"Status: {ex.error.code().name}")
+        print(f"Error: {ex.error.message()}")
         error_messages = []
         for error in ex.failure.errors:
             error_messages.append(f"{error.error_code}: {error.message}")
         raise Exception(f"Google Ads API error: {'; '.join(error_messages)}")
     except Exception as e:
+        print(f"❌ Unexpected error: {str(e)}")
         raise Exception(f"Error researching keyword: {str(e)}")
 
 def main():
