@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: keyword-research-slack-bot
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements_slack.txt
+    startCommand: gunicorn slack_app_manifest:app
+    envVars:
+      # Slack App Configuration
+      - key: SLACK_BOT_TOKEN
+        sync: false
+      - key: SLACK_SIGNING_SECRET
+        sync: false
+      - key: SLACK_VERIFICATION_TOKEN
+        sync: false
+      # Google Ads Configuration (set these in Render dashboard)
+      - key: GOOGLE_ADS_CUSTOMER_ID
+        sync: false
+      - key: GOOGLE_ADS_DEVELOPER_TOKEN
+        sync: false
+      - key: GOOGLE_ADS_CLIENT_ID
+        sync: false
+      - key: GOOGLE_ADS_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_ADS_REFRESH_TOKEN
+        sync: false
+      # Server Configuration
+      - key: PORT
+        value: 10000
+      - key: FLASK_ENV
+        value: production
