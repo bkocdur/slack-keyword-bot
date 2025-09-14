@@ -32,6 +32,6 @@ OAUTH_CONFIG = {
 
 # API Settings
 LANGUAGE_CODE = "languageConstants/1000"  # English
-LOCATION_CODE = "geoTargetConstants/784"  # United Arab Emirates
+LOCATION_CODE = "geoTargetConstants/2840"  # United Arab Emirates
 NETWORK_TYPE = "GOOGLE_SEARCH"
 SCOPES = ["https://www.googleapis.com/auth/adwords"]

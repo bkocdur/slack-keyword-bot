@@ -10,7 +10,7 @@ def get_keyword_data(keyword):
     """
     try:
         print(f"🔍 Researching keyword: {keyword}")
-        print(f"📍 Location: UAE (geoTargetConstants/784)")
+        print(f"📍 Location: UAE (geoTargetConstants/2840)")
         print(f"🌐 Language: English (languageConstants/1000)")
         
         client = GoogleAdsClient.load_from_dict(GOOGLE_ADS_CONFIG)
@@ -21,7 +21,7 @@ def get_keyword_data(keyword):
         request.customer_id = CUSTOMER_ID
         request.language = LANGUAGE_CODE
         # Add UAE geo targeting using the correct resource name format
-        request.geo_target_constants.append("geoTargetConstants/784")
+        request.geo_target_constants.append(LOCATION_CODE)
         request.keyword_plan_network = client.enums.KeywordPlanNetworkEnum[NETWORK_TYPE]
         request.keyword_seed.keywords.append(keyword)
 
