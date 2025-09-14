@@ -26,6 +26,6 @@ services:
         sync: false
       # Server Configuration
       - key: PORT
-        value: 10000
+        value: 1000
       - key: FLASK_ENV
         value: production
