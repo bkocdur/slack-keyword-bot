@@ -9,7 +9,7 @@ import os
 CUSTOMER_ID = os.getenv("GOOGLE_ADS_CUSTOMER_ID", "1640547396")
 
 # Default keyword to research
-DEFAULT_KEYWORD = "home cleaning dubai"
+DEFAULT_KEYWORD = "digital marketing dubai"
 
 # Google Ads API Configuration
 # Uses environment variables for sensitive data
@@ -32,5 +32,6 @@ OAUTH_CONFIG = {
 
 # API Settings
 LANGUAGE_CODE = "languageConstants/1000"  # English
+LOCATION_CODE = "geoTargetConstants/784"  # United Arab Emirates
 NETWORK_TYPE = "GOOGLE_SEARCH"
 SCOPES = ["https://www.googleapis.com/auth/adwords"]

@@ -1,7 +1,7 @@
 from google.ads.googleads.client import GoogleAdsClient
 from google.ads.googleads.errors import GoogleAdsException
 import sys
-from config import CUSTOMER_ID, DEFAULT_KEYWORD, GOOGLE_ADS_CONFIG, LANGUAGE_CODE, NETWORK_TYPE
+from config import CUSTOMER_ID, DEFAULT_KEYWORD, GOOGLE_ADS_CONFIG, LANGUAGE_CODE, LOCATION_CODE, NETWORK_TYPE
 
 def get_keyword_data(keyword):
     """
@@ -16,6 +16,7 @@ def get_keyword_data(keyword):
         request = client.get_type("GenerateKeywordIdeasRequest")
         request.customer_id = CUSTOMER_ID
         request.language = LANGUAGE_CODE
+        request.geo_target_constants.append(LOCATION_CODE)
         request.keyword_plan_network = client.enums.KeywordPlanNetworkEnum[NETWORK_TYPE]
         request.keyword_seed.keywords.append(keyword)
 
