@@ -64,10 +64,13 @@ def slack_events():
     """Handle Slack events"""
     try:
         data = request.get_json()
+        logger.info(f"Received Slack event: {data}")
         
         # Handle URL verification
         if data.get('type') == 'url_verification':
-            return jsonify({'challenge': data.get('challenge')})
+            challenge = data.get('challenge')
+            logger.info(f"Responding to challenge: {challenge}")
+            return jsonify({'challenge': challenge})
         
         # Handle app mentions
         if data.get('type') == 'event_callback':
@@ -83,6 +86,11 @@ def slack_events():
     except Exception as e:
         logger.error(f"Error handling Slack event: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/slack/events', methods=['GET'])
+def slack_events_get():
+    """Handle GET requests to slack/events (for testing)"""
+    return jsonify({'message': 'Slack events endpoint is working', 'status': 'ok'})
 
 def handle_app_mention(event):
     """Handle @mentions of the bot"""
