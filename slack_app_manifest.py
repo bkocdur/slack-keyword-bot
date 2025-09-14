@@ -254,8 +254,6 @@ if __name__ == '__main__':
     port = int(os.getenv('PORT', 1000))
     debug = os.getenv('FLASK_ENV', 'production') == 'development'
     
+    logger.info(f"PORT environment variable: {os.getenv('PORT')}")
     logger.info(f"Starting Keyword Research Slack Bot on port {port}")
-    
-    # Only run the Flask development server if not running under Gunicorn
-    if __name__ == '__main__':
-        app.run(host='0.0.0.0', port=port, debug=debug)
+    app.run(host='0.0.0.0', port=port, debug=debug)
