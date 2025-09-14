@@ -251,7 +251,7 @@ if __name__ == '__main__':
         exit(1)
     
     # Start the Flask app
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('PORT', 1000))
     debug = os.getenv('FLASK_ENV', 'production') == 'development'
     
     logger.info(f"Starting Keyword Research Slack Bot on port {port}")
