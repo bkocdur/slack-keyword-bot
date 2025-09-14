@@ -171,10 +171,19 @@ def handle_direct_message(event):
     except Exception as e:
         logger.error(f"Error handling direct message: {str(e)}")
 
-@app.route('/slack/command', methods=['POST'])
+@app.route('/slack/command', methods=['POST', 'GET'])
 def slack_command():
     """Handle slash commands"""
     try:
+        # Handle GET requests (for testing)
+        if request.method == 'GET':
+            return jsonify({
+                'message': 'Slack command endpoint is working',
+                'status': 'ok',
+                'method': 'GET'
+            })
+        
+        # Handle POST requests (from Slack)
         data = request.form
         command = data.get('command')
         text = data.get('text', '').strip()
